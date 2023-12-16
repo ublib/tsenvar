@@ -1,0 +1,25 @@
+{
+  "name": "@tsenvar/browser",
+  "version": "0.0.1",
+  "description": "@tsenvar/browser",
+  "main": "dist/index.js",
+  "author": "Ubugeeei <ubuge1122@gmail.com>",
+  "license": "MIT",
+  "keywords": [
+    "typescript",
+    "browser",
+    "env",
+    "environment variable",
+    "type-safe",
+    "declarative"
+  ],
+  "homepage": "https://github.com/ublib/tsenvar.git",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ublib/tsenvar.git",
+    "directory": "packages/browser"
+  },
+  "files": [
+    "dist"
+  ]
+}

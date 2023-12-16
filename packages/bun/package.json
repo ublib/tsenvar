@@ -1,0 +1,25 @@
+{
+  "name": "@tsenvar/bun",
+  "version": "0.0.1",
+  "description": "@tsenvar/bun",
+  "main": "dist/index.js",
+  "author": "Ubugeeei <ubuge1122@gmail.com>",
+  "license": "MIT",
+  "keywords": [
+    "typescript",
+    "bun",
+    "env",
+    "environment variable",
+    "type-safe",
+    "declarative"
+  ],
+  "homepage": "https://github.com/ublib/tsenvar.git",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ublib/tsenvar.git",
+    "directory": "packages/bun"
+  },
+  "files": [
+    "dist"
+  ]
+}

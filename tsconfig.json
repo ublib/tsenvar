@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "outDir": "temp",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "allowJs": true,
+    "rootDir": ".",
+    "paths": {
+      "@tsenvar/*": [
+        "./packages/*/src"
+      ],
+      "tsenvar": [
+        "./packages/tsenvar/src"
+      ]
+    }
+  },
+  "include": [
+    "./packages/**/src/*.ts"
+  ]
+}
