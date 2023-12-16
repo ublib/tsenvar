@@ -1,6 +1,9 @@
 import path from "node:path";
-import * as esbuild from "esbuild";
+import { execSync } from "node:child_process";
+
+import { build } from "esbuild";
 import { rimraf } from "rimraf";
+import { bundle } from "dts-bundle";
 
 /** @type {(str: string) => string} */
 const blue = str => `\x1b[34m${str}\x1b[0m`;
@@ -25,12 +28,14 @@ const PACKAGES = {
 /**
  * @type {() => PromiseLike<import('esbuild').BuildResult<{ entryPoints: string, outdir: string }>>[]}
  */
-export const buildTsenvar = () =>
-  Object.entries(PACKAGES).map(([pkg, { external }]) => {
+export const buildTsenvar = () => {
+  execSync("tsc -p tsconfig.build.json");
+
+  const promises = Object.entries(PACKAGES).map(async ([pkg, { external }]) => {
     /**
      * @type {import('esbuild').BuildOptions}
      */
-    const res = esbuild.build({
+    const res = await build({
       entryPoints: [path.resolve(`packages/${pkg}/src/index`)],
       bundle: true,
       minify: true,
@@ -38,10 +43,26 @@ export const buildTsenvar = () =>
       outdir: `packages/${pkg}/dist`,
       external,
       format: "esm",
+      plugins: [
+        {
+          name: "TypeScriptDeclarationsPlugin",
+          setup(build) {
+            build.onEnd(() => {
+              bundle({
+                name: pkg,
+                main: `temp/packages/${pkg}/src/index.d.ts`,
+                out: path.resolve(`packages/${pkg}/dist/index.d.ts`),
+              });
+            });
+          },
+        },
+      ],
     });
-    res.then(() => finishedBuild(`packages/${pkg}/dist`));
+    finishedBuild(`packages/${pkg}/dist`);
     return res;
   });
+  return promises;
+};
 
 /**
  * @type {function(): void}
@@ -58,4 +79,5 @@ export const clearTsenvarSync = () =>
   console.log("building tsenvar...");
   const buildingTsenvar = buildTsenvar();
   await Promise.all([...buildingTsenvar]);
+  execSync("rm -rf temp");
 })();

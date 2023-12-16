@@ -5,9 +5,7 @@
   "description": "define and load type-safe environment variables for any JavaScript runtime",
   "main": "index.js",
   "scripts": {
-    "build": "pnpm run bundle && pnpm run build:dts",
-    "bundle": "node scripts/build.js",
-    "build:dts": "rm -rf temp && tsc -p tsconfig.build.json && node scripts/dts.js && rm -rf temp",
+    "build": "node scripts/build.js",
     "fmt": "prettier",
     "lint": "ESLINT_USE_FLAT_CONFIG=true eslint"
   },
@@ -20,6 +18,7 @@
   },
   "devDependencies": {
     "@types/node": "^20.10.4",
+    "dts-bundle": "^0.7.3",
     "esbuild": "^0.19.9",
     "eslint": "^8.56.0",
     "eslint-config-prettier": "^9.1.0",
