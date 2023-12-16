@@ -1,22 +1,13 @@
 import dotenv from "dotenv";
 
 import type { Tsenvar } from "..";
-import type { FileSystem, Panic, RawEnv } from "./interface";
+import type { LoaderContext } from "./interface";
 
 import { clearer } from "./clear";
 import { mergeLoaderOptions } from "./options";
 import { resolve } from "./resolve";
 
 export * from "./interface";
-
-/**
- * @internal
- */
-export interface LoaderContext {
-  rawEnv: RawEnv;
-  panic: Panic;
-  fs: FileSystem;
-}
 
 /**
  * @internal

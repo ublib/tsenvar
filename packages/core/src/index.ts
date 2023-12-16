@@ -1,4 +1,4 @@
-import { Defs, ResolveType } from "./define";
+import type { Defs, ResolveType } from "./define";
 
 export type { Defs, Def, ResolveType } from "./define";
 export { define } from "./define";
@@ -16,6 +16,6 @@ export interface LoaderOptions {
   overwrite?: boolean;
 }
 
-export type Load = <T extends Defs>(envVarDefs: T, options: LoaderOptions) => ResolveType<Defs>;
+export type Load = <T extends Defs>(envVarDefs: T, options?: LoaderOptions) => ResolveType<T>;
 
 export type Clear = (defs: Defs) => void;
