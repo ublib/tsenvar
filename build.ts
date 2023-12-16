@@ -5,16 +5,12 @@ import { build } from "esbuild";
 import { rimraf } from "rimraf";
 import { bundle } from "dts-bundle";
 
-/** @type {(str: string) => string} */
-const blue = str => `\x1b[34m${str}\x1b[0m`;
+const blue = (str: string) => `\x1b[34m${str}\x1b[0m`;
+const green = (str: string) => `\x1b[32m${str}\x1b[0m`;
 
-/** @type {(str: string) => string} */
-const green = str => `\x1b[32m${str}\x1b[0m`;
+const finishedBuild = (dir: string) => console.log(`${green("✔︎")} build: ${blue(dir)}`);
 
-/** @type {(dir: string) => void} */
-const finishedBuild = dir => console.log(`${green("✔︎")} build: ${blue(dir)}`);
-
-const PACKAGES = {
+const PACKAGES: Record<string, { external?: string[] }> = {
   tsenvar: {},
   browser: {},
   bun: {},
@@ -25,16 +21,10 @@ const PACKAGES = {
   },
 };
 
-/**
- * @type {() => PromiseLike<import('esbuild').BuildResult<{ entryPoints: string, outdir: string }>>[]}
- */
 export const buildTsenvar = () => {
   execSync("tsc -p tsconfig.build.json");
 
   const promises = Object.entries(PACKAGES).map(async ([pkg, { external }]) => {
-    /**
-     * @type {import('esbuild').BuildOptions}
-     */
     const res = await build({
       entryPoints: [path.resolve(`packages/${pkg}/src/index`)],
       bundle: true,
@@ -64,9 +54,6 @@ export const buildTsenvar = () => {
   return promises;
 };
 
-/**
- * @type {function(): void}
- */
 export const clearTsenvarSync = () =>
   Object.entries(PACKAGES)
     .map(([pkg]) => `packages/${pkg}/dist`)

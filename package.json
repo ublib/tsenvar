@@ -5,7 +5,7 @@
   "description": "define and load type-safe environment variables for any JavaScript runtime",
   "main": "index.js",
   "scripts": {
-    "build": "node scripts/build.js",
+    "build": "tsx build",
     "fmt": "prettier",
     "lint": "ESLINT_USE_FLAT_CONFIG=true eslint"
   },
@@ -24,6 +24,7 @@
     "eslint-config-prettier": "^9.1.0",
     "prettier": "^3.1.1",
     "rimraf": "^5.0.5",
+    "tsx": "^4.6.2",
     "typescript": "^5.3.3"
   }
 }
