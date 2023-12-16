@@ -1,5 +1,7 @@
 import type { Defs, ResolveType } from "./define";
 
+export * from "./errors";
+
 export type { Defs, Def, ResolveType } from "./define";
 export { define } from "./define";
 
