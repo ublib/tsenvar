@@ -20,6 +20,9 @@
     }
   },
   "include": [
-    "./packages/**/src/*.ts"
-, "packages/core/src/internal/interface.ts", "packages/core/src/internal/index.ts"  ]
+    "packages/**/src/*.ts",
+    "packages/core/src/internal/interface.ts",
+    "packages/core/src/internal/index.ts",
+    "examples",
+  ]
 }
