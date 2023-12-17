@@ -6,7 +6,7 @@ import type { Tsenvar } from "..";
  */
 export const clearer =
   (ctx: Readonly<LoaderContext>): Tsenvar["clear"] =>
-  envVarDefs => {
+  (envVarDefs) => {
     for (const key in envVarDefs) {
       // TODO: already defined?
       delete ctx.rawEnv.read()[key];

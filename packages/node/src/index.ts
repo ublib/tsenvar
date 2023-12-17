@@ -17,7 +17,7 @@ const loaderContext = {
   },
 
   fs: {
-    readFileSync: path => fs.readFileSync(path, "utf-8"),
+    readFileSync: (path) => fs.readFileSync(path, "utf-8"),
   },
 } satisfies LoaderContext;
 

@@ -6,7 +6,7 @@
   "main": "index.js",
   "scripts": {
     "build": "tsx build",
-    "fmt": "prettier",
+    "fmt": "npx @biomejs/biome format .",
     "lint": "oxlint"
   },
   "keywords": [],
@@ -17,6 +17,7 @@
     "pnpm": "8.12.1"
   },
   "devDependencies": {
+    "@biomejs/biome": "^1.4.1",
     "@types/node": "^20.10.4",
     "dts-bundle": "^0.7.3",
     "esbuild": "^0.19.9",
