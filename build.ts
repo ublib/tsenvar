@@ -17,7 +17,7 @@ const PACKAGES: Record<string, { external?: string[] }> = {
   core: {},
   deno: {},
   node: {
-    external: ["fs", "path", "os", "crypto"].flatMap(it => [it, `node:${it}`]),
+    external: ["fs", "path", "os", "crypto"].flatMap((it) => [it, `node:${it}`]),
   },
 };
 
@@ -57,7 +57,7 @@ export const buildTsenvar = () => {
 export const clearTsenvarSync = () =>
   Object.entries(PACKAGES)
     .map(([pkg]) => `packages/${pkg}/dist`)
-    .map(dir => rimraf(dir));
+    .map((dir) => rimraf(dir));
 
 (async function main() {
   console.log("clear dist...");
