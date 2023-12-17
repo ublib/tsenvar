@@ -10,7 +10,8 @@
   "scripts": {
     "build": "tsx build",
     "fmt": "npx @biomejs/biome format .",
-    "lint": "oxlint"
+    "lint": "oxlint",
+    "prepare": "husky install"
   },
   "lint-staged": {
     "*": [
@@ -26,6 +27,7 @@
     "@types/node": "^20.10.4",
     "dts-bundle": "^0.7.3",
     "esbuild": "^0.19.9",
+    "husky": "^8.0.0",
     "oxlint": "latest",
     "rimraf": "^5.0.5",
     "tsx": "^4.6.2",
