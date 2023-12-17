@@ -18,7 +18,7 @@ importers:
         specifier: ^0.19.9
         version: 0.19.9
       husky:
-        specifier: ^8.0.3
+        specifier: ^8.0.0
         version: 8.0.3
       oxlint:
         specifier: latest
