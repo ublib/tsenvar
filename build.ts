@@ -61,10 +61,10 @@ export const clearTsenvarSync = () =>
 
 (async function main() {
   console.log("clear dist...");
-  await Promise.allSettled([...clearTsenvarSync()]);
+  await Promise.allSettled(clearTsenvarSync());
   console.log(`${green("✔︎")} finished clearing dist`);
   console.log("building tsenvar...");
   const buildingTsenvar = buildTsenvar();
-  await Promise.all([...buildingTsenvar]);
+  await Promise.all(buildingTsenvar);
   execSync("rm -rf temp");
 })();
