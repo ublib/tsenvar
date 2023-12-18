@@ -8,6 +8,9 @@ importers:
 
   .:
     devDependencies:
+      '@types/dts-bundle':
+        specifier: ^0.0.35
+        version: 0.0.35
       '@types/node':
         specifier: ^20.10.4
         version: 20.10.4
@@ -516,6 +519,10 @@ packages:
 
   /@types/detect-indent@0.1.30:
     resolution: {integrity: sha512-AUmj9JHuHTD94slY1WR1VulFxRGC6D1pcNCN0MCulKFyiihvV/28lLS8oRHgfmc2Cxq954J8Vmosa8qzm7PLGQ==}
+    dev: true
+
+  /@types/dts-bundle@0.0.35:
+    resolution: {integrity: sha512-TZCP4CIDR3R3K2ij5UqXzKfkiAcnVBSUudPOq0zUk42hl8PirN/4q0dPiidBP3s7hZJuB7OQULxR3I2ZQsnLig==}
     dev: true
 
   /@types/glob@5.0.30:
