@@ -21,3 +21,5 @@ export interface LoaderOptions {
 export type Load = <T extends Defs>(envVarDefs: T, options?: LoaderOptions) => ResolveType<T>;
 
 export type Clear = (defs: Defs) => void;
+
+export * from "./internal";

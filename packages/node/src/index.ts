@@ -1,7 +1,7 @@
 import fs from "node:fs";
 
-import type { LoaderContext } from "../../core/src/internal";
-import { createTsenvar } from "../../core/src/internal";
+import type { LoaderContext } from "@tsenvar/core";
+import { createTsenvar } from "@tsenvar/core";
 
 const loaderContext = {
   rawEnv: {

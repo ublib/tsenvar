@@ -10,28 +10,26 @@ const green = (str: string) => `\x1b[32m${str}\x1b[0m`;
 
 const finishedBuild = (dir: string) => console.log(`${green("✔︎")} build: ${blue(dir)}`);
 
+const EXTERN_NODE = ["fs", "path", "os", "crypto"].flatMap((it) => [it, `node:${it}`]);
 const PACKAGES: Record<string, { external?: string[] }> = {
   tsenvar: {},
   browser: {},
   bun: {},
   core: {},
   deno: {},
-  node: {
-    external: ["fs", "path", "os", "crypto"].flatMap((it) => [it, `node:${it}`]),
-  },
+  node: {},
 };
 
 export const buildTsenvar = () => {
   execSync("tsc -p tsconfig.build.json");
 
-  const promises = Object.entries(PACKAGES).map(async ([pkg, { external }]) => {
+  const promises = Object.entries(PACKAGES).map(async ([pkg]) => {
     const res = await build({
       entryPoints: [path.resolve(`packages/${pkg}/src/index`)],
       bundle: true,
-      minify: true,
       target: "es2018",
       outdir: `packages/${pkg}/dist`,
-      external,
+      external: EXTERN_NODE,
       format: "esm",
       plugins: [
         {
