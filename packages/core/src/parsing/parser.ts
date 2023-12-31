@@ -1,8 +1,11 @@
 import type { EnvVar, Document, Identifier, Value, Node } from "./ast";
 
-const EOF = "\0";
-const NEWLINE = "\n";
-const RESERVED_CHARS = ["=", '"'];
+const enum Tokens {
+  Eof = "\0",
+  Newline = "\n",
+  Equal = "=",
+  DoubleQuat = '"',
+}
 
 type ParseResult<T extends Node> = ParseResultOk<T> | ParseResultErr;
 
@@ -72,7 +75,7 @@ const parseEnvVar = (context: ParserContext): ParseResult<EnvVar> => {
 
   const identifier = maybeId.value;
   consumeWhitespace(context);
-  if (peekChar(context) !== "=") {
+  if (peekChar(context) !== Tokens.Equal) {
     return err([
       {
         error: `Expected "=", got "${peekChar(context)}"`,
@@ -121,8 +124,8 @@ const parseValue = (context: ParserContext): ParseResult<Value> => {
 
   while (
     isDoubleQuat
-      ? peekChar(context) !== '"' && peekChar(context) !== EOF
-      : peekChar(context) !== NEWLINE && peekChar(context) !== EOF
+      ? peekChar(context) !== Tokens.DoubleQuat && peekChar(context) !== Tokens.Eof
+      : peekChar(context) !== Tokens.Newline && peekChar(context) !== Tokens.Eof
   ) {
     value += consumeChar(context);
   }
@@ -149,7 +152,7 @@ const parseValue = (context: ParserContext): ParseResult<Value> => {
 };
 
 const peekChar = (context: ParserContext): string => {
-  return context.source[context.position] ?? EOF;
+  return context.source[context.position] ?? Tokens.Eof;
 };
 
 const consumeChar = (context: ParserContext): string => {
