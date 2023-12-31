@@ -61,14 +61,20 @@ const parseDocument = (context: ParserContext): ParseResult<Document> => {
     return err(errors.join("\n")); // TODO:
   }
   consumeChar(context);
+  consumeWhitespace(context);
+  const value = parseValue(context);
+  if (!value.ok) {
+    errors.push({ error: value.error, position: context.position });
+    return err(errors.join("\n")); // TODO:
+  }
 
   // TODO: loop
   const end = context.position;
   envVars.push({
     id: identifier,
     value: {
-      value: "",
-      span: { start: identifier.span.end, end: identifier.span.end },
+      value: value.value.value,
+      span: value.value.span,
     },
     span: { start, end },
   });
@@ -96,6 +102,22 @@ const parseIdentifier = (context: ParserContext): ParseResult<Identifier> => {
 
 const isIdentifierChar = (char: string): boolean => {
   return /[a-zA-Z0-9_]/.test(char);
+};
+
+const parseValue = (context: ParserContext): ParseResult<Value> => {
+  const start = context.position;
+  let value = "";
+  // TODO:
+  while (peekChar(context) !== EOF) {
+    value += consumeChar(context);
+  }
+
+  const end = context.position;
+
+  return ok({
+    value,
+    span: { start, end },
+  });
 };
 
 const peekChar = (context: ParserContext): string => {

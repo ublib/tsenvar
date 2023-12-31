@@ -3,7 +3,7 @@ import { parse } from "../src/parsing";
 
 describe("parse", () => {
   it("should parse", () => {
-    const result = parse("STAGE_NAME=");
+    const result = parse("STAGE_NAME=development");
     expect(result.ok).toBe(true);
     if (result.ok) {
       expect(result.value).toEqual({
@@ -14,20 +14,20 @@ describe("parse", () => {
               span: { start: 0, end: 10 },
             },
             value: {
-              value: "",
-              span: { start: 10, end: 10 },
+              value: "development",
+              span: { start: 11, end: 22 },
             },
-            span: { start: 0, end: 11 },
+            span: { start: 0, end: 22 },
           },
         ],
-        span: { start: 0, end: 11 },
+        span: { start: 0, end: 22 },
       });
     }
   });
 
-  it("should parse with space", () => {
+  it("should parse with space left", () => {
     const result = parse(`STAGE_NAME
-      =`);
+      =development`);
     expect(result.ok).toBe(true);
     if (result.ok) {
       expect(result.value).toEqual({
@@ -38,13 +38,38 @@ describe("parse", () => {
               span: { start: 0, end: 10 },
             },
             value: {
-              value: "",
-              span: { start: 10, end: 10 },
+              value: "development",
+              span: { start: 18, end: 29 },
             },
-            span: { start: 0, end: 18 },
+            span: { start: 0, end: 29 },
           },
         ],
-        span: { start: 0, end: 18 },
+        span: { start: 0, end: 29 },
+      });
+    }
+  });
+
+  it("should parse with space right", () => {
+    const result = parse(`STAGE_NAME
+      =
+      development`);
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      expect(result.value).toEqual({
+        envVars: [
+          {
+            id: {
+              name: "STAGE_NAME",
+              span: { start: 0, end: 10 },
+            },
+            value: {
+              value: "development",
+              span: { start: 25, end: 36 },
+            },
+            span: { start: 0, end: 36 },
+          },
+        ],
+        span: { start: 0, end: 36 },
       });
     }
   });
