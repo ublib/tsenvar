@@ -112,7 +112,7 @@ describe("success to parse", () => {
             },
             value: {
               value: "development",
-              span: { start: 11, end: 24 },
+              span: { start: 12, end: 23 },
             },
             span: { start: 0, end: 24 },
           },
@@ -139,7 +139,7 @@ describe("success to parse", () => {
               value: `
     development
     `,
-              span: { start: 11, end: 34 },
+              span: { start: 12, end: 33 },
             },
             span: { start: 0, end: 34 },
           },

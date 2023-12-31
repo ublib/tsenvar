@@ -100,12 +100,15 @@ const parseEnvVar = (context: ParserContext): ParseResult<EnvVar> => {
 
 const parseIdentifier = (context: ParserContext): ParseResult<Identifier> => {
   const start = context.position;
-  let name = "";
   while (isIdentifierChar(peekChar(context))) {
-    name += consumeChar(context);
+    consumeChar(context);
   }
   const end = context.position;
-  return ok({ name, span: { start, end } });
+
+  return ok({
+    name: context.source.slice(start, end),
+    span: { start, end },
+  });
 };
 
 const isIdentifierChar = (char: string): boolean => {
@@ -113,11 +116,11 @@ const isIdentifierChar = (char: string): boolean => {
 };
 
 const parseValue = (context: ParserContext): ParseResult<Value> => {
-  const start = context.position;
-  let value = "";
+  let start = context.position;
 
   let isDoubleQuat = false;
   if (peekChar(context) === '"') {
+    start++;
     isDoubleQuat = true;
     consumeChar(context); // skip '"'
   }
@@ -127,7 +130,7 @@ const parseValue = (context: ParserContext): ParseResult<Value> => {
       ? peekChar(context) !== Tokens.DoubleQuat && peekChar(context) !== Tokens.Eof
       : peekChar(context) !== Tokens.Newline && peekChar(context) !== Tokens.Eof
   ) {
-    value += consumeChar(context);
+    consumeChar(context);
   }
 
   if (isDoubleQuat) {
@@ -143,10 +146,10 @@ const parseValue = (context: ParserContext): ParseResult<Value> => {
     consumeChar(context); // skip '"'
   }
 
-  const end = context.position;
+  const end = context.position - (isDoubleQuat ? 1 : 0);
 
   return ok({
-    value,
+    value: context.source.slice(start, end),
     span: { start, end },
   });
 };
@@ -155,10 +158,8 @@ const peekChar = (context: ParserContext): string => {
   return context.source[context.position] ?? Tokens.Eof;
 };
 
-const consumeChar = (context: ParserContext): string => {
-  const char = peekChar(context);
+const consumeChar = (context: ParserContext) => {
   context.position++;
-  return char;
 };
 
 const consumeWhitespace = (context: ParserContext): void => {
