@@ -1,6 +1,11 @@
-import { EnvVar, Document, Identifier, Value, Node } from "./ast";
+import type { EnvVar, Document, Identifier, Value, Node } from "./ast";
 
-const EOF = "\0";
+const enum Tokens {
+  DoubleQuat = '"',
+  Eof = "\0",
+  Equal = "=",
+  Newline = "\n",
+}
 
 type ParseResult<T extends Node> = ParseResultOk<T> | ParseResultErr;
 
@@ -15,7 +20,7 @@ interface ParseResultOk<T extends Node> extends ParseResultBase {
 
 interface ParseResultErr extends ParseResultBase {
   ok: false;
-  error: string;
+  errors: ParseErrorValue[];
 }
 
 interface ParseErrorValue {
@@ -23,9 +28,10 @@ interface ParseErrorValue {
   position: number;
 }
 
-const ok = <T extends Node>(value: T): ParseResult<T> => ({
-  ok: true,
-  value,
+const ok = <T extends Node>(value: T): ParseResult<T> => ({ ok: true, value });
+const err = (errors: ParseErrorValue[]): ParseResultErr => ({
+  ok: false,
+  errors,
 });
 
 interface ParserContext {
@@ -33,87 +39,144 @@ interface ParserContext {
   position: number;
 }
 
-const createContext = (source: string): ParserContext => ({ source, position: 0 });
+const createContext = (source: string): ParserContext => ({
+  source,
+  position: 0,
+});
 
 export const parse = (input: string): ParseResult<Document> => {
-  const context = createContext(input);
-  return parseDocument(context);
+  const ctx = createContext(input);
+  return parseDocument(ctx);
 };
 
-const parseDocument = (context: ParserContext): ParseResult<Document> => {
+const parseDocument = (ctx: ParserContext): ParseResult<Document> => {
   const envVars: EnvVar[] = [];
   const errors: ParseErrorValue[] = [];
-  while (peekChar(context) !== EOF) {
-    const envVar = parseEnvVar(context);
+
+  const start = ctx.position;
+  while (peekChar(ctx) !== Tokens.Eof) {
+    // prologue
+    consumeWhitespace(ctx);
+
+    const envVar = parseEnvVar(ctx);
     if (!envVar.ok) {
-      errors.push({ error: envVar.error, position: context.position });
-      continue;
+      errors.push(...err(envVar.errors).errors);
+      return err(errors);
     }
     envVars.push(envVar.value);
+
+    // epilogue
+    consumeWhitespace(ctx);
   }
+
+  const end = ctx.position;
+
   return ok({
     envVars,
-    span: { start: 0, end: context.position },
-  });
-};
-
-const parseEnvVar = (context: ParserContext): ParseResult<EnvVar> => {
-  const start = context.position;
-  const id = parseIdentifier(context);
-  if (!id.ok) {
-    return id;
-  }
-  consumeWhitespace(context);
-  consumeChar(context);
-  consumeWhitespace(context);
-  const value = parseValue(context);
-  if (!value.ok) {
-    return value;
-  }
-  const end = context.position;
-  return ok({
-    id: id.value,
-    value: value.value,
     span: { start, end },
   });
 };
 
-const parseIdentifier = (context: ParserContext): ParseResult<Identifier> => {
-  const start = context.position;
-  let name = "";
-  while (peekChar(context) !== "=") {
-    name += consumeChar(context);
+const parseEnvVar = (ctx: ParserContext): ParseResult<EnvVar> => {
+  const start = ctx.position;
+  const maybeId = parseIdentifier(ctx);
+  if (!maybeId.ok) return err(maybeId.errors);
+
+  const identifier = maybeId.value;
+  consumeWhitespace(ctx);
+  if (peekChar(ctx) !== Tokens.Equal) {
+    return err([
+      {
+        error: `Expected "=", got "${peekChar(ctx)}"`,
+        position: ctx.position,
+      },
+    ]);
   }
-  const end = context.position;
+  consumeChar(ctx); // skip "="
+  consumeWhitespace(ctx);
+  const maybeValue = parseValue(ctx);
+  if (!maybeValue.ok) return err(maybeValue.errors);
+
   return ok({
-    name,
+    id: identifier,
+    value: {
+      value: maybeValue.value.value,
+      span: maybeValue.value.span,
+    },
+    span: { start, end: ctx.position },
+  });
+};
+
+const parseIdentifier = (ctx: ParserContext): ParseResult<Identifier> => {
+  const start = ctx.position;
+  while (isIdentifierChar(peekChar(ctx))) {
+    consumeChar(ctx);
+  }
+  const end = ctx.position;
+
+  return ok({
+    name: ctx.source.slice(start, end),
     span: { start, end },
   });
 };
 
-const parseValue = (context: ParserContext): ParseResult<Value> => {
-  const start = context.position;
-  let value = "";
-  while (peekChar(context) !== "\n") {
-    value += consumeChar(context);
+const isIdentifierChar = (char: string): boolean => {
+  return /[a-zA-Z0-9_]/.test(char);
+};
+
+const parseValue = (ctx: ParserContext): ParseResult<Value> => {
+  let start = ctx.position;
+
+  let isDoubleQuat = false;
+  if (peekChar(ctx) === '"') {
+    start++;
+    isDoubleQuat = true;
+    consumeChar(ctx); // skip '"'
   }
-  const end = context.position;
+
+  while (
+    isDoubleQuat
+      ? peekChar(ctx) !== Tokens.DoubleQuat && peekChar(ctx) !== Tokens.Eof
+      : peekChar(ctx) !== Tokens.Newline && peekChar(ctx) !== Tokens.Eof
+  ) {
+    consumeChar(ctx);
+  }
+
+  if (isDoubleQuat) {
+    // When eof without closing double quat
+    if (peekChar(ctx) !== Tokens.DoubleQuat) {
+      return err([
+        {
+          error: `Expected '"', got "${peekChar(ctx)}"`,
+          position: ctx.position,
+        },
+      ]);
+    }
+    consumeChar(ctx); // skip '"'
+  }
+
+  const end = ctx.position - (isDoubleQuat ? 1 : 0);
+
   return ok({
-    value,
+    value: ctx.source.slice(start, end),
     span: { start, end },
   });
 };
 
-const consumeChar = (context: ParserContext): string => {
-  return context.source[context.position++] ?? EOF;
+const peekChar = (ctx: ParserContext): string => {
+  return ctx.source[ctx.position] ?? Tokens.Eof;
 };
 
-const consumeWhitespace = (context: ParserContext): void => {
-  while (/s/.test(peekChar(context))) {
-    consumeChar(context);
+const consumeChar = (ctx: ParserContext) => {
+  ctx.position++;
+};
+
+const consumeWhitespace = (ctx: ParserContext): void => {
+  while (isWhitespace(peekChar(ctx))) {
+    consumeChar(ctx);
   }
 };
 
-const peekChar = (context: ParserContext): string => {
-  return context.source[context.position] ?? EOF;
+const isWhitespace = (char: string): boolean => {
+  return /\s/.test(char);
 };

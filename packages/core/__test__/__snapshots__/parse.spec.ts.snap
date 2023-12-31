@@ -1,0 +1,401 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`success to multi vars parse > should parse 1`] = `
+{
+  "envVars": [
+    {
+      "id": {
+        "name": "STAGE_NAME",
+        "span": {
+          "end": 10,
+          "start": 0,
+        },
+      },
+      "span": {
+        "end": 22,
+        "start": 0,
+      },
+      "value": {
+        "span": {
+          "end": 22,
+          "start": 11,
+        },
+        "value": "development",
+      },
+    },
+    {
+      "id": {
+        "name": "PORT",
+        "span": {
+          "end": 27,
+          "start": 23,
+        },
+      },
+      "span": {
+        "end": 32,
+        "start": 23,
+      },
+      "value": {
+        "span": {
+          "end": 32,
+          "start": 28,
+        },
+        "value": "3000",
+      },
+    },
+  ],
+  "span": {
+    "end": 32,
+    "start": 0,
+  },
+}
+`;
+
+exports[`success to multi vars parse > should parse mixed double quat and no double quot values 1`] = `
+{
+  "envVars": [
+    {
+      "id": {
+        "name": "STAGE_NAME",
+        "span": {
+          "end": 10,
+          "start": 0,
+        },
+      },
+      "span": {
+        "end": 24,
+        "start": 0,
+      },
+      "value": {
+        "span": {
+          "end": 23,
+          "start": 12,
+        },
+        "value": "development",
+      },
+    },
+    {
+      "id": {
+        "name": "PORT",
+        "span": {
+          "end": 31,
+          "start": 27,
+        },
+      },
+      "span": {
+        "end": 36,
+        "start": 27,
+      },
+      "value": {
+        "span": {
+          "end": 36,
+          "start": 32,
+        },
+        "value": "3000",
+      },
+    },
+  ],
+  "span": {
+    "end": 36,
+    "start": 0,
+  },
+}
+`;
+
+exports[`success to multi vars parse > should parse mixed double quat and no double quot values 2`] = `
+{
+  "envVars": [
+    {
+      "id": {
+        "name": "STAGE_NAME",
+        "span": {
+          "end": 10,
+          "start": 0,
+        },
+      },
+      "span": {
+        "end": 22,
+        "start": 0,
+      },
+      "value": {
+        "span": {
+          "end": 22,
+          "start": 11,
+        },
+        "value": "development",
+      },
+    },
+    {
+      "id": {
+        "name": "PORT",
+        "span": {
+          "end": 29,
+          "start": 25,
+        },
+      },
+      "span": {
+        "end": 36,
+        "start": 25,
+      },
+      "value": {
+        "span": {
+          "end": 35,
+          "start": 31,
+        },
+        "value": "3000",
+      },
+    },
+  ],
+  "span": {
+    "end": 36,
+    "start": 0,
+  },
+}
+`;
+
+exports[`success to multi vars parse > should parse mixed double quat and no double quot values 3`] = `
+{
+  "envVars": [
+    {
+      "id": {
+        "name": "STAGE_NAME",
+        "span": {
+          "end": 10,
+          "start": 0,
+        },
+      },
+      "span": {
+        "end": 28,
+        "start": 0,
+      },
+      "value": {
+        "span": {
+          "end": 28,
+          "start": 17,
+        },
+        "value": "development",
+      },
+    },
+    {
+      "id": {
+        "name": "PORT",
+        "span": {
+          "end": 35,
+          "start": 31,
+        },
+      },
+      "span": {
+        "end": 46,
+        "start": 31,
+      },
+      "value": {
+        "span": {
+          "end": 45,
+          "start": 41,
+        },
+        "value": "3000",
+      },
+    },
+  ],
+  "span": {
+    "end": 46,
+    "start": 0,
+  },
+}
+`;
+
+exports[`success to multi vars parse > should parse with double quat value 1`] = `
+{
+  "envVars": [
+    {
+      "id": {
+        "name": "STAGE_NAME",
+        "span": {
+          "end": 15,
+          "start": 5,
+        },
+      },
+      "span": {
+        "end": 29,
+        "start": 5,
+      },
+      "value": {
+        "span": {
+          "end": 28,
+          "start": 17,
+        },
+        "value": "development",
+      },
+    },
+    {
+      "id": {
+        "name": "PORT",
+        "span": {
+          "end": 34,
+          "start": 30,
+        },
+      },
+      "span": {
+        "end": 41,
+        "start": 30,
+      },
+      "value": {
+        "span": {
+          "end": 40,
+          "start": 36,
+        },
+        "value": "3000",
+      },
+    },
+    {
+      "id": {
+        "name": "PORT2",
+        "span": {
+          "end": 47,
+          "start": 42,
+        },
+      },
+      "span": {
+        "end": 56,
+        "start": 42,
+      },
+      "value": {
+        "span": {
+          "end": 55,
+          "start": 51,
+        },
+        "value": "3000",
+      },
+    },
+  ],
+  "span": {
+    "end": 57,
+    "start": 0,
+  },
+}
+`;
+
+exports[`success to multi vars parse > should parse with double quat value with spaces 1`] = `
+{
+  "envVars": [
+    {
+      "id": {
+        "name": "STAGE_NAME",
+        "span": {
+          "end": 15,
+          "start": 5,
+        },
+      },
+      "span": {
+        "end": 35,
+        "start": 5,
+      },
+      "value": {
+        "span": {
+          "end": 34,
+          "start": 17,
+        },
+        "value": "
+    development
+",
+      },
+    },
+    {
+      "id": {
+        "name": "PORT",
+        "span": {
+          "end": 45,
+          "start": 41,
+        },
+      },
+      "span": {
+        "end": 52,
+        "start": 41,
+      },
+      "value": {
+        "span": {
+          "end": 51,
+          "start": 47,
+        },
+        "value": "3000",
+      },
+    },
+    {
+      "id": {
+        "name": "PORT2",
+        "span": {
+          "end": 59,
+          "start": 54,
+        },
+      },
+      "span": {
+        "end": 69,
+        "start": 54,
+      },
+      "value": {
+        "span": {
+          "end": 68,
+          "start": 63,
+        },
+        "value": "
+3000",
+      },
+    },
+  ],
+  "span": {
+    "end": 70,
+    "start": 0,
+  },
+}
+`;
+
+exports[`success to multi vars parse > should parse with space head 1`] = `
+{
+  "envVars": [
+    {
+      "id": {
+        "name": "STAGE_NAME",
+        "span": {
+          "end": 15,
+          "start": 5,
+        },
+      },
+      "span": {
+        "end": 27,
+        "start": 5,
+      },
+      "value": {
+        "span": {
+          "end": 27,
+          "start": 16,
+        },
+        "value": "development",
+      },
+    },
+    {
+      "id": {
+        "name": "PORT",
+        "span": {
+          "end": 32,
+          "start": 28,
+        },
+      },
+      "span": {
+        "end": 37,
+        "start": 28,
+      },
+      "value": {
+        "span": {
+          "end": 37,
+          "start": 33,
+        },
+        "value": "3000",
+      },
+    },
+  ],
+  "span": {
+    "end": 37,
+    "start": 0,
+  },
+}
+`;
