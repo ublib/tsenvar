@@ -45,15 +45,15 @@ const createContext = (source: string): ParserContext => ({
 });
 
 export const parse = (input: string): ParseResult<Document> => {
-  const context = createContext(input);
-  return parseDocument(context);
+  const ctx = createContext(input);
+  return parseDocument(ctx);
 };
 
-const parseDocument = (context: ParserContext): ParseResult<Document> => {
+const parseDocument = (ctx: ParserContext): ParseResult<Document> => {
   const envVars: EnvVar[] = [];
   const errors: ParseErrorValue[] = [];
 
-  const envVar = parseEnvVar(context);
+  const envVar = parseEnvVar(ctx);
 
   // TODO: loop
   if (!envVar.ok) {
@@ -64,28 +64,28 @@ const parseDocument = (context: ParserContext): ParseResult<Document> => {
 
   return ok({
     envVars,
-    span: { start: 0, end: context.position },
+    span: { start: 0, end: ctx.position },
   });
 };
 
-const parseEnvVar = (context: ParserContext): ParseResult<EnvVar> => {
-  const start = context.position;
-  const maybeId = parseIdentifier(context);
+const parseEnvVar = (ctx: ParserContext): ParseResult<EnvVar> => {
+  const start = ctx.position;
+  const maybeId = parseIdentifier(ctx);
   if (!maybeId.ok) return err(maybeId.errors);
 
   const identifier = maybeId.value;
-  consumeWhitespace(context);
-  if (peekChar(context) !== Tokens.Equal) {
+  consumeWhitespace(ctx);
+  if (peekChar(ctx) !== Tokens.Equal) {
     return err([
       {
-        error: `Expected "=", got "${peekChar(context)}"`,
-        position: context.position,
+        error: `Expected "=", got "${peekChar(ctx)}"`,
+        position: ctx.position,
       },
     ]);
   }
-  consumeChar(context); // skip "="
-  consumeWhitespace(context);
-  const maybeValue = parseValue(context);
+  consumeChar(ctx); // skip "="
+  consumeWhitespace(ctx);
+  const maybeValue = parseValue(ctx);
   if (!maybeValue.ok) return err(maybeValue.errors);
 
   return ok({
@@ -94,19 +94,19 @@ const parseEnvVar = (context: ParserContext): ParseResult<EnvVar> => {
       value: maybeValue.value.value,
       span: maybeValue.value.span,
     },
-    span: { start, end: context.position },
+    span: { start, end: ctx.position },
   });
 };
 
-const parseIdentifier = (context: ParserContext): ParseResult<Identifier> => {
-  const start = context.position;
-  while (isIdentifierChar(peekChar(context))) {
-    consumeChar(context);
+const parseIdentifier = (ctx: ParserContext): ParseResult<Identifier> => {
+  const start = ctx.position;
+  while (isIdentifierChar(peekChar(ctx))) {
+    consumeChar(ctx);
   }
-  const end = context.position;
+  const end = ctx.position;
 
   return ok({
-    name: context.source.slice(start, end),
+    name: ctx.source.slice(start, end),
     span: { start, end },
   });
 };
@@ -115,56 +115,56 @@ const isIdentifierChar = (char: string): boolean => {
   return /[a-zA-Z0-9_]/.test(char);
 };
 
-const parseValue = (context: ParserContext): ParseResult<Value> => {
-  let start = context.position;
+const parseValue = (ctx: ParserContext): ParseResult<Value> => {
+  let start = ctx.position;
 
   let isDoubleQuat = false;
-  if (peekChar(context) === '"') {
+  if (peekChar(ctx) === '"') {
     start++;
     isDoubleQuat = true;
-    consumeChar(context); // skip '"'
+    consumeChar(ctx); // skip '"'
   }
 
   while (
     isDoubleQuat
-      ? peekChar(context) !== Tokens.DoubleQuat && peekChar(context) !== Tokens.Eof
-      : peekChar(context) !== Tokens.Newline && peekChar(context) !== Tokens.Eof
+      ? peekChar(ctx) !== Tokens.DoubleQuat && peekChar(ctx) !== Tokens.Eof
+      : peekChar(ctx) !== Tokens.Newline && peekChar(ctx) !== Tokens.Eof
   ) {
-    consumeChar(context);
+    consumeChar(ctx);
   }
 
   if (isDoubleQuat) {
     // When eof without closing double quat
-    if (peekChar(context) !== Tokens.DoubleQuat) {
+    if (peekChar(ctx) !== Tokens.DoubleQuat) {
       return err([
         {
-          error: `Expected '"', got "${peekChar(context)}"`,
-          position: context.position,
+          error: `Expected '"', got "${peekChar(ctx)}"`,
+          position: ctx.position,
         },
       ]);
     }
-    consumeChar(context); // skip '"'
+    consumeChar(ctx); // skip '"'
   }
 
-  const end = context.position - (isDoubleQuat ? 1 : 0);
+  const end = ctx.position - (isDoubleQuat ? 1 : 0);
 
   return ok({
-    value: context.source.slice(start, end),
+    value: ctx.source.slice(start, end),
     span: { start, end },
   });
 };
 
-const peekChar = (context: ParserContext): string => {
-  return context.source[context.position] ?? Tokens.Eof;
+const peekChar = (ctx: ParserContext): string => {
+  return ctx.source[ctx.position] ?? Tokens.Eof;
 };
 
-const consumeChar = (context: ParserContext) => {
-  context.position++;
+const consumeChar = (ctx: ParserContext) => {
+  ctx.position++;
 };
 
-const consumeWhitespace = (context: ParserContext): void => {
-  while (isWhitespace(peekChar(context))) {
-    consumeChar(context);
+const consumeWhitespace = (ctx: ParserContext): void => {
+  while (isWhitespace(peekChar(ctx))) {
+    consumeChar(ctx);
   }
 };
 
