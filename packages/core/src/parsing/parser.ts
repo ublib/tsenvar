@@ -53,18 +53,27 @@ const parseDocument = (ctx: ParserContext): ParseResult<Document> => {
   const envVars: EnvVar[] = [];
   const errors: ParseErrorValue[] = [];
 
-  const envVar = parseEnvVar(ctx);
+  const start = ctx.position;
+  while (peekChar(ctx) !== Tokens.Eof) {
+    // prologue
+    consumeWhitespace(ctx);
 
-  // TODO: loop
-  if (!envVar.ok) {
-    errors.push(...err(envVar.errors).errors);
-    return err(errors);
+    const envVar = parseEnvVar(ctx);
+    if (!envVar.ok) {
+      errors.push(...err(envVar.errors).errors);
+      return err(errors);
+    }
+    envVars.push(envVar.value);
+
+    // epilogue
+    consumeWhitespace(ctx);
   }
-  envVars.push(envVar.value);
+
+  const end = ctx.position;
 
   return ok({
     envVars,
-    span: { start: 0, end: ctx.position },
+    span: { start, end },
   });
 };
 
