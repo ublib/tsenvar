@@ -17,12 +17,16 @@
       "tsenvar": [
         "./packages/tsenvar/src"
       ]
-    }
+    },
+    "types": [
+      "vitest/globals"
+    ]
   },
   "include": [
     "packages/**/src/*.ts",
     "packages/core/src/internal/interface.ts",
     "packages/core/src/internal/index.ts",
-    "examples", "packages/core/src/parser/parser.ts",
+    "examples",
+    "packages/core/src/parser/parser.ts",
   ]
 }
