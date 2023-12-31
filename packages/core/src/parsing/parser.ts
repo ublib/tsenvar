@@ -1,10 +1,10 @@
 import type { EnvVar, Document, Identifier, Value, Node } from "./ast";
 
 const enum Tokens {
-  Eof = "\0",
-  Newline = "\n",
-  Equal = "=",
   DoubleQuat = '"',
+  Eof = "\0",
+  Equal = "=",
+  Newline = "\n",
 }
 
 type ParseResult<T extends Node> = ParseResultOk<T> | ParseResultErr;
@@ -132,7 +132,7 @@ const parseValue = (context: ParserContext): ParseResult<Value> => {
 
   if (isDoubleQuat) {
     // When eof without closing double quat
-    if (peekChar(context) !== '"') {
+    if (peekChar(context) !== Tokens.DoubleQuat) {
       return err([
         {
           error: `Expected '"', got "${peekChar(context)}"`,
