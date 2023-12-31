@@ -15,7 +15,7 @@ interface ParseResultOk<T extends Node> extends ParseResultBase {
 
 interface ParseResultErr extends ParseResultBase {
   ok: false;
-  error: string;
+  errors: ParseErrorValue[];
 }
 
 interface ParseErrorValue {
@@ -24,7 +24,10 @@ interface ParseErrorValue {
 }
 
 const ok = <T extends Node>(value: T): ParseResult<T> => ({ ok: true, value });
-const err = (error: string): ParseResultErr => ({ ok: false, error });
+const err = (errors: ParseErrorValue[]): ParseResultErr => ({
+  ok: false,
+  errors,
+});
 
 interface ParserContext {
   source: string;
@@ -45,43 +48,48 @@ const parseDocument = (context: ParserContext): ParseResult<Document> => {
   const envVars: EnvVar[] = [];
   const errors: ParseErrorValue[] = [];
 
-  const start = context.position;
-  const id = parseIdentifier(context);
-  if (!id.ok) {
-    errors.push({ error: id.error, position: context.position });
-    return err(errors.join("\n")); // TODO:
-  }
-  const identifier = id.value;
-  consumeWhitespace(context);
-  if (peekChar(context) !== "=") {
-    errors.push({
-      error: `Expected "=", got "${peekChar(context)}"`,
-      position: context.position,
-    });
-    return err(errors.join("\n")); // TODO:
-  }
-  consumeChar(context);
-  consumeWhitespace(context);
-  const value = parseValue(context);
-  if (!value.ok) {
-    errors.push({ error: value.error, position: context.position });
-    return err(errors.join("\n")); // TODO:
-  }
+  const envVar = parseEnvVar(context);
 
   // TODO: loop
-  const end = context.position;
-  envVars.push({
-    id: identifier,
-    value: {
-      value: value.value.value,
-      span: value.value.span,
-    },
-    span: { start, end },
-  });
+  if (!envVar.ok) {
+    errors.push(...err(envVar.errors).errors);
+    return err(errors);
+  }
+  envVars.push(envVar.value);
 
   return ok({
     envVars,
     span: { start: 0, end: context.position },
+  });
+};
+
+const parseEnvVar = (context: ParserContext): ParseResult<EnvVar> => {
+  const start = context.position;
+  const maybeId = parseIdentifier(context);
+  if (!maybeId.ok) return err(maybeId.errors);
+
+  const identifier = maybeId.value;
+  consumeWhitespace(context);
+  if (peekChar(context) !== "=") {
+    return err([
+      {
+        error: `Expected "=", got "${peekChar(context)}"`,
+        position: context.position,
+      },
+    ]);
+  }
+  consumeChar(context); // skip "="
+  consumeWhitespace(context);
+  const maybeValue = parseValue(context);
+  if (!maybeValue.ok) return err(maybeValue.errors);
+
+  return ok({
+    id: identifier,
+    value: {
+      value: maybeValue.value.value,
+      span: maybeValue.value.span,
+    },
+    span: { start, end: context.position },
   });
 };
 
@@ -91,13 +99,8 @@ const parseIdentifier = (context: ParserContext): ParseResult<Identifier> => {
   while (isIdentifierChar(peekChar(context))) {
     name += consumeChar(context);
   }
-
   const end = context.position;
-
-  return ok({
-    name,
-    span: { start, end },
-  });
+  return ok({ name, span: { start, end } });
 };
 
 const isIdentifierChar = (char: string): boolean => {
