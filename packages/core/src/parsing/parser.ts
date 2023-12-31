@@ -49,11 +49,21 @@ const parseDocument = (context: ParserContext): ParseResult<Document> => {
   const id = parseIdentifier(context);
   if (!id.ok) {
     errors.push({ error: id.error, position: context.position });
-    return err(errors.join("\n"));
+    return err(errors.join("\n")); // TODO:
   }
   const identifier = id.value;
-  const end = context.position;
+  consumeWhitespace(context);
+  if (peekChar(context) !== "=") {
+    errors.push({
+      error: `Expected "=", got "${peekChar(context)}"`,
+      position: context.position,
+    });
+    return err(errors.join("\n")); // TODO:
+  }
+  consumeChar(context);
 
+  // TODO: loop
+  const end = context.position;
   envVars.push({
     id: identifier,
     value: {
@@ -96,4 +106,14 @@ const consumeChar = (context: ParserContext): string => {
   const char = peekChar(context);
   context.position++;
   return char;
+};
+
+const consumeWhitespace = (context: ParserContext): void => {
+  while (isWhitespace(peekChar(context))) {
+    consumeChar(context);
+  }
+};
+
+const isWhitespace = (char: string): boolean => {
+  return /\s/.test(char);
 };
