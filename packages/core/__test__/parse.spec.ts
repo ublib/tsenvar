@@ -74,3 +74,13 @@ describe("parse", () => {
     }
   });
 });
+
+describe("parse errors", () => {
+  it("should error on missing =", () => {
+    const result = parse("STAGE_NAME development");
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(result.errors).toEqual([{ error: 'Expected "=", got "d"', position: 11 }]);
+    }
+  });
+});
