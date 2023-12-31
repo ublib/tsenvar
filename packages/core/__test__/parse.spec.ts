@@ -1,8 +1,8 @@
 import { describe, it, expect } from "vitest";
 import { parse } from "../src/parsing";
 
-describe("parse", () => {
-  it("should parse", () => {
+describe("success to parse", () => {
+  it("basic single parsing", () => {
     const result = parse("STAGE_NAME=development");
     expect(result.ok).toBe(true);
     if (result.ok) {
@@ -98,6 +98,56 @@ describe("parse", () => {
       });
     }
   });
+
+  it("should parse with double quat value", () => {
+    const result = parse(`STAGE_NAME="development"`);
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      expect(result.value).toEqual({
+        envVars: [
+          {
+            id: {
+              name: "STAGE_NAME",
+              span: { start: 0, end: 10 },
+            },
+            value: {
+              value: "development",
+              span: { start: 11, end: 24 },
+            },
+            span: { start: 0, end: 24 },
+          },
+        ],
+        span: { start: 0, end: 24 },
+      });
+    }
+  });
+
+  it("should parse with double quat value with newlines", () => {
+    const result = parse(`STAGE_NAME="
+    development
+    "`);
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      expect(result.value).toEqual({
+        envVars: [
+          {
+            id: {
+              name: "STAGE_NAME",
+              span: { start: 0, end: 10 },
+            },
+            value: {
+              value: `
+    development
+    `,
+              span: { start: 11, end: 34 },
+            },
+            span: { start: 0, end: 34 },
+          },
+        ],
+        span: { start: 0, end: 34 },
+      });
+    }
+  });
 });
 
 describe("parse errors", () => {
@@ -106,6 +156,19 @@ describe("parse errors", () => {
     expect(result.ok).toBe(false);
     if (!result.ok) {
       expect(result.errors).toEqual([{ error: 'Expected "=", got "d"', position: 11 }]);
+    }
+  });
+
+  it("closing double quat not exist", () => {
+    const result = parse(`STAGE_NAME="development`);
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(result.errors).toEqual([
+        {
+          error: `Expected '"', got "\0"`,
+          position: 23,
+        },
+      ]);
     }
   });
 });

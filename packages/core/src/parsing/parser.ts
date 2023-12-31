@@ -1,6 +1,8 @@
 import type { EnvVar, Document, Identifier, Value, Node } from "./ast";
 
 const EOF = "\0";
+const NEWLINE = "\n";
+const RESERVED_CHARS = ["=", '"'];
 
 type ParseResult<T extends Node> = ParseResultOk<T> | ParseResultErr;
 
@@ -110,9 +112,32 @@ const isIdentifierChar = (char: string): boolean => {
 const parseValue = (context: ParserContext): ParseResult<Value> => {
   const start = context.position;
   let value = "";
-  // TODO:
-  while (peekChar(context) !== EOF) {
+
+  let isDoubleQuat = false;
+  if (peekChar(context) === '"') {
+    isDoubleQuat = true;
+    consumeChar(context); // skip '"'
+  }
+
+  while (
+    isDoubleQuat
+      ? peekChar(context) !== '"' && peekChar(context) !== EOF
+      : peekChar(context) !== NEWLINE && peekChar(context) !== EOF
+  ) {
     value += consumeChar(context);
+  }
+
+  if (isDoubleQuat) {
+    // When eof without closing double quat
+    if (peekChar(context) !== '"') {
+      return err([
+        {
+          error: `Expected '"', got "${peekChar(context)}"`,
+          position: context.position,
+        },
+      ]);
+    }
+    consumeChar(context); // skip '"'
   }
 
   const end = context.position;
